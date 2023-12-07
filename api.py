@@ -2,6 +2,7 @@ import requests as rq
 import json
 
 URL = "https://transfermarkt-api.vercel.app"
+# TODO: add query constants
 
 
 # Competitions
