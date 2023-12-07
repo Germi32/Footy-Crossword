@@ -1,4 +1,5 @@
 from tkinter import *
+from io import BytesIO
 
 # Constantes
 BG_COLOR = "#343541"
