@@ -3,11 +3,15 @@ from api import (search_competition, search_club, search_player, get_competition
                  get_player_transfers, get_player_stats)
 
 # Filters
-MIN_PRICE_CLUB = 400000000
+MIN_PRICE_CLUB = 400_000_000
+MIN_PRICE_PLAYER = 50_000_000
+ADAPT_NUMBER = 10_000
 competitions = ("LaLiga", "Premier League", "Serie A")
 # API query constants
 ID = "id"
 CURRENT_MARKET_VALUE = "currentMarketValue"
+MARKET_VALUE = "marketValue"
+NAME = "name"
 
 
 def remove_letters(string: str):
@@ -15,11 +19,12 @@ def remove_letters(string: str):
     return int(only_numbers)
 
 
-def filter_clubs_by_competition(competition_id):
+def filter_clubs_by_competition(competition_id: str):
     clubs = None
 
     while clubs is None:
         clubs = get_competition_clubs(competition_id)
+
         if clubs is None:
             print(f"Error searching clubs from competition with ID: {competition_id}.")
 
@@ -33,11 +38,11 @@ def filter_clubs_by_competition(competition_id):
             if check is None:
                 print(f"Error getting profile from club with ID: {club[ID]}.")
 
-        if check["currentMarketValue"][-1] == 'n':
+        if check[CURRENT_MARKET_VALUE][-1] == 'n':
             approved_clubs.append(club)
-        elif check["currentMarketValue"][-1] == 'm':
-            price = remove_letters(check["currentMarketValue"]) * 10000
-            if price > MIN_PRICE_CLUB:
+        elif check[CURRENT_MARKET_VALUE][-1] == 'm':
+            price = remove_letters(check[CURRENT_MARKET_VALUE]) * ADAPT_NUMBER
+            if price >= MIN_PRICE_CLUB:
                 approved_clubs.append(club)
             else:
                 break
@@ -47,13 +52,14 @@ def filter_clubs_by_competition(competition_id):
     return approved_clubs
 
 
-def filter_clubs(competition_name):
+def filter_clubs(competition_name: str):
     approved_clubs = []
 
     result = None
 
     while result is None:
         result = search_competition(competition_name)
+
         if result is None:
             print(f"Error searching competition with name: {competition_name}.")
         else:
@@ -62,11 +68,51 @@ def filter_clubs(competition_name):
     return approved_clubs
 
 
-# TODO: filter players
+def filter_players_by_club(club_id: str):
+    players = None
+
+    while players is None:
+        players = get_club_players(club_id)
+
+        if players is None:
+            print(f"Error searching players from club with ID: {club_id}.")
+
+    approved_players = []
+
+    for player in players:
+        if MARKET_VALUE in player:
+            if player[MARKET_VALUE][-1] == 'm':
+                price = remove_letters(player[MARKET_VALUE]) * ADAPT_NUMBER
+                if price >= MIN_PRICE_PLAYER:
+                    approved_players.append(player)
+
+    return approved_players
+
+
+def filter_players(club_name: str):
+    approved_players = []
+
+    result = None
+
+    while result is None:
+        result = search_club(club_name)
+
+        if result is None:
+            print(f"Error searching players from club with name {club_name}.")
+        else:
+            approved_players = filter_players_by_club(result[0][ID])
+
+    return approved_players
+
+
+# Testing
 filtered_clubs = []
+filtered_players = []
 
 for competition in competitions:
     filtered_clubs.extend(filter_clubs(competition))
 
 for club in filtered_clubs:
-    print(get_club_players(club[ID]))
+    filtered_players.extend(filter_players(club[NAME]))
+
+print(filtered_players)
