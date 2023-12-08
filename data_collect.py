@@ -1,3 +1,4 @@
+import json
 from api import (search_competition, search_club, search_player, get_competition_clubs,
                  get_club_profile, get_club_players, get_player_profile, get_player_market_value,
                  get_player_transfers, get_player_stats)
@@ -5,8 +6,9 @@ from api import (search_competition, search_club, search_player, get_competition
 # Filters
 MIN_PRICE_CLUB = 400_000_000
 MIN_PRICE_PLAYER = 50_000_000
-ADAPT_NUMBER = 10_000
 competitions = ("LaLiga", "Premier League", "Serie A")
+# Constants
+ADAPT_NUMBER = 10_000
 # API query constants
 ID = "id"
 CURRENT_MARKET_VALUE = "currentMarketValue"
@@ -105,14 +107,16 @@ def filter_players(club_name: str):
     return approved_players
 
 
-# Testing
-filtered_clubs = []
-filtered_players = []
+def update_players():
+    filtered_clubs = []
 
-for competition in competitions:
-    filtered_clubs.extend(filter_clubs(competition))
+    for competition in competitions:
+        filtered_clubs.extend(filter_clubs(competition))
 
-for club in filtered_clubs:
-    filtered_players.extend(filter_players(club[NAME]))
+    filtered_players = []
 
-print(filtered_players)
+    for club in filtered_clubs:
+        filtered_players.extend(filter_players(club[NAME]))
+
+    with open("players.json", "w") as players_file:
+        json.dump(filtered_players, players_file)

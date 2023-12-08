@@ -1,6 +1,7 @@
 import requests as rq
 import json
 
+# TODO: check to change API (maybe)
 URL = "https://transfermarkt-api.vercel.app"
 # TODO: add query constants
 

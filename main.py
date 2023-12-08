@@ -1,7 +1,13 @@
 from tkinter import *
-from io import BytesIO
+import os
+import data_collect as data
+import game as game
 
-# Constantes
+# Import players
+if not os.path.exists("players.json"):
+    print("Updating players...")
+    data.update_players()
+# Constants
 BG_COLOR = "#343541"
 
 # Main
@@ -12,7 +18,8 @@ if __name__ == '__main__':
     root.geometry("854x480")
     root.state("zoomed")
     root.configure(background=BG_COLOR)
-    # TODO: Make custom title bar
+    # TODO: make custom title bar
+    # TODO: make loading wheel for update
     # Title
     title = Frame(root, border=1)
     title_text = Label(title,
