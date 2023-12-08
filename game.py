@@ -13,6 +13,8 @@ NATIONALITY = "citizenship"
 def format_player_name(player: dict):
     if player[NAME] == "Lucas Paquetá":
         player[NAME] = "Paqueta"
+    if player[NAME] == "Lamine Yamal":
+        player[NAME] = "Yamal"
     if len(player[NAME].split()) == 2:
         if player[NATIONALITY][0] == 'Brazil':
             player[NAME] = str(player[NAME].split()[0])
@@ -48,8 +50,3 @@ def random_player():
         player_profile = format_player_name(player_profile)
 
         return player_profile
-
-
-while True:
-    player = random_player()
-    print(f"Formatted name: {player[NAME]}")
